@@ -5,20 +5,19 @@ from maze import Maze
 MAX_ATTEMPTS = 1000
 
 class MazeGenerator:
-    def __init__(self, shape, seed, max_attempts = MAX_ATTEMPTS):
-        self.shape = shape
+    def __init__(self, seed, max_attempts = MAX_ATTEMPTS):
         self.seed = seed
         self.max_attempts = MAX_ATTEMPTS
 
     def set_seed(self, seed):
         self.seed = seed
 
-    def generate_maze(self):
+    def generate_maze(self, shape, start = None, end = None):
         # 0 - wall, 1 - walkable
         np.random.seed(self.seed)
 
         for _ in range(self.max_attempts):
-            maze = Maze(self.shape)
+            maze = Maze(shape, start, end)
             candidates = [maze.get_start()]
             while len(candidates) > 0:
                 current = candidates[np.random.choice(len(candidates))]

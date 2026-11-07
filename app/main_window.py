@@ -2,7 +2,9 @@ import os
 
 os.environ["QT_API"] = "PySide6"
 
-from PySide6.QtWidgets import QMainWindow, QHBoxLayout, QWidget, QVBoxLayout, QSpinBox, QFormLayout, QPushButton, QMessageBox
+from PySide6.QtWidgets import (QMainWindow, QHBoxLayout, QWidget, QVBoxLayout,
+                               QSpinBox, QFormLayout, QPushButton, QMessageBox,
+                               QLabel, QCheckBox)
 from PySide6.QtCore import QSize
 
 from matplotlib.backends.backend_qtagg import FigureCanvas
@@ -21,9 +23,9 @@ class MplCanvas(FigureCanvas):
         self.axes = fig.add_subplot(111)
         super().__init__(fig)
 
-    def plot_maze(self, maze):
+    def plot_maze(self, maze, start_end_visible=True):
         self.axes.clear()
-        draw_maze(maze, self.axes)
+        draw_maze(maze, self.axes, start_end_visible)
         self.draw_idle()
 
 class MainWindow(QMainWindow):
@@ -53,13 +55,37 @@ class MainWindow(QMainWindow):
 
         self.seed_spin = self._make_spinbox(0, 2_147_483_647, 42)
 
+        start_end_info_layout = QHBoxLayout()
+        start_end_info_layout.addWidget(QLabel("Height"))
+        start_end_info_layout.addWidget(QLabel("Width"))
+
+        self.start_height_spin = self._make_spinbox(0, self.height_spin.value() - 1, 0)
+        self.start_width_spin = self._make_spinbox(0, self.width_spin.value() - 1, 0)
+
+        start_layout = QHBoxLayout()
+        start_layout.addWidget(self.start_height_spin)
+        start_layout.addWidget(self.start_width_spin)
+
+        self.end_height_spin = self._make_spinbox(0, self.height_spin.value() - 1, self.height_spin.value() - 1)
+        self.end_width_spin = self._make_spinbox(0, self.width_spin.value() - 1, self.width_spin.value() - 1)
+
+        end_layout = QHBoxLayout()
+        end_layout.addWidget(self.end_height_spin)
+        end_layout.addWidget(self.end_width_spin)
+
+        self.show_start_end = QCheckBox()
+
         self.generate_button = QPushButton("Generate Maze")
         self.generate_button.released.connect(self.generate_and_show)
 
         form_layout = QFormLayout()
         form_layout.addRow("Height", self.height_spin)
         form_layout.addRow("Width", self.width_spin)
+        form_layout.addRow("Info", start_end_info_layout)
+        form_layout.addRow("Start", start_layout)
+        form_layout.addRow("End", end_layout)
         form_layout.addRow("Seed", self.seed_spin)
+        form_layout.addRow("Make start/end visible", self.show_start_end)
 
         right_layout = QVBoxLayout()
         right_layout.addLayout(form_layout)
@@ -90,16 +116,18 @@ class MainWindow(QMainWindow):
     def generate_and_show(self):
         shape = (self.height_spin.value(), self.width_spin.value())
         seed = self.seed_spin.value()
-        maze_generator = MazeGenerator(shape, seed)
+        start = (self.start_height_spin.value(), self.start_width_spin.value())
+        end = (self.end_height_spin.value(), self.end_width_spin.value())
+        maze_generator = MazeGenerator(seed)
 
         try:
-            maze = maze_generator.generate_maze()
+            maze = maze_generator.generate_maze(shape, start, end)
         except (ValueError, RuntimeError) as error:
             QMessageBox.warning(self, "Could not generate maze", str(error))
             return
         maze.add_bounds()
 
-        self.canvas.plot_maze(maze)
+        self.canvas.plot_maze(maze, self.show_start_end.isChecked())
 
 
 

@@ -5,14 +5,20 @@ import numpy as np
 DIRECTIONS = ((-1, 0), (0, -1), (1, 0), (0, 1))
 
 class Maze:
-    def __init__(self, shape):
+    def __init__(self, shape, start = None, end = None):
         self.grid = np.zeros(shape=shape)
         self.height, self.width = shape
-        self.start = (0, 0)
-        self.end = (self.height - 1, self.width - 1)
+        self.start = start or (0, 0)
+        self.end = end or (self.height - 1, self.width - 1)
 
         if self.height < 3 or self.width < 3:
             raise ValueError(f"Invalid shape:{shape}, width and height have to be at least 3")
+
+        if not self.in_bounds(self.start):
+            raise ValueError(f"Starting point {self.start} is not in bounds of the maze")
+
+        if not self.in_bounds(self.end):
+            raise ValueError(f"Ending point {self.end} is not in bounds of the maze")
     def __str__(self):
         print()
         EMPTY = ' '
