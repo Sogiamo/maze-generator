@@ -10,5 +10,5 @@ def draw_maze(maze, ax, start_end_visible = True):
     norm = BoundaryNorm([-0.5, 0.5, 1.5, 2.5, 3.5], cmap.N)
 
     ax.imshow(maze_copy, cmap=cmap, norm=norm)
-    ax.set_title("Maze")
+    # ax.set_title("Maze")
     ax.axis("off")

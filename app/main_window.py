@@ -15,6 +15,9 @@ from maze import Maze
 from maze_generator import MazeGenerator
 from plot_maze import draw_maze
 
+import matplotlib as mpl
+mpl.rcParams["savefig.dpi"] = 1000
+
 
 class MplCanvas(FigureCanvas):
 
@@ -40,7 +43,7 @@ class MainWindow(QMainWindow):
 
         left_layout = QVBoxLayout()
 
-        self.canvas = MplCanvas(self, width=5, height=4, dpi=100)
+        self.canvas = MplCanvas(self, width=5, height=4, dpi=200)
 
         toolbar = NavigationToolbar(self.canvas, self)
 
@@ -50,7 +53,6 @@ class MainWindow(QMainWindow):
         # Right Layout
 
         self.height_spin = self._make_spinbox(7, 500, 100)
-
         self.width_spin = self._make_spinbox(7, 500, 100)
 
         self.seed_spin = self._make_spinbox(0, 2_147_483_647, 42)
@@ -106,12 +108,21 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(main_container)
 
         self.generate_and_show()
+        self.height_spin.valueChanged.connect(self.update_spinbox_range)
+        self.width_spin.valueChanged.connect(self.update_spinbox_range)
 
     def _make_spinbox(self, min, max, value):
         spinbox = QSpinBox()
         spinbox.setRange(min, max)
         spinbox.setValue(value)
         return spinbox
+
+    def update_spinbox_range(self):
+        self.end_height_spin.setRange(0, self.height_spin.value() - 1)
+        self.end_width_spin.setRange(0, self.width_spin.value() - 1)
+
+        self.start_height_spin.setRange(0, self.height_spin.value() - 1)
+        self.start_width_spin.setRange(0, self.width_spin.value() - 1)
 
     def generate_and_show(self):
         shape = (self.height_spin.value(), self.width_spin.value())
