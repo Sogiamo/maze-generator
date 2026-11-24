@@ -12,4 +12,4 @@ This is an app that generates simple mazes, in order to learn pyside6 library.
 
 ## Getting Started for app users
 ---
-1. Download `MazeGenerator.exe` from github.
+1. Download [`MazeGenerator.exe`](https://github.com/Sogiamo/maze-generator/releases/tag/v1.0) from github.
