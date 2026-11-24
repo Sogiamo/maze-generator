@@ -7,7 +7,7 @@ MAX_ATTEMPTS = 1000
 class MazeGenerator:
     def __init__(self, seed, max_attempts = MAX_ATTEMPTS):
         self.seed = seed
-        self.max_attempts = MAX_ATTEMPTS
+        self.max_attempts = max_attempts
 
     def set_seed(self, seed):
         self.seed = seed
@@ -32,7 +32,7 @@ class MazeGenerator:
                 return maze
 
         raise RuntimeError(
-            f"No maze of shape {self.shape} reached the end after "
+            f"No maze of shape {shape} reached the end after "
             f"{self.max_attempts} attempts; try another seed or size"
         )
 

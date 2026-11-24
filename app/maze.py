@@ -109,3 +109,30 @@ class Maze:
 
     def get_end(self):
         return self.end
+
+    def count_walls(self):
+        _, counts = np.unique_counts(self.grid)
+        return counts[0]
+
+    def count_walkable(self):
+        _, counts = np.unique_counts(self.grid)
+        return counts[1]
+
+    def path_length(self):
+        queue = deque()
+
+        current = self.start
+        visited = {current}
+        queue.append((current, -1))
+
+        while len(queue) > 0:
+            current, distance = queue.popleft()
+            if current == self.end:
+                return distance + 1
+            current_neighbours = self.get_walkable_neighbours(current)
+            for neighbour in current_neighbours:
+                if neighbour not in visited:
+                    queue.append((neighbour, distance + 1))
+                    visited.add(neighbour)
+
+        return -1
